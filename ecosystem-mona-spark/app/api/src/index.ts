@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 import financeRouter from './finance';
+import aiRouter from './ai';
 
 // Middleware
 app.use(helmet());
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/finance', financeRouter);
+app.use('/api/ai', aiRouter);
 
 // Rate limiting
 const limiter = rateLimit({
