@@ -1,0 +1,52 @@
+{
+  "name": "mona-spark-ecosystem",
+  "version": "1.0.0",
+  "description": "Écosystème MONA x SPARK - Stack Straight Up",
+  "private": true,
+  "workspaces": [
+    "app/client",
+    "app/api",
+    "services/*",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "deploy:staging": "kubectl apply -f k8s/staging/",
+    "deploy:production": "kubectl apply -f k8s/production/",
+    "monitor": "docker-compose -f monitoring/docker-compose.yml up -d"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "turbo": "^1.10.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mona-spark/ecosystem.git"
+  },
+  "keywords": [
+    "mona",
+    "spark",
+    "ecosystem",
+    "artists",
+    "creators",
+    "monetization"
+  ],
+  "author": "MONA x SPARK Team",
+  "license": "MIT"
+} 

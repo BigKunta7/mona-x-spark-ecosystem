@@ -1,0 +1,61 @@
+{
+  "name": "mona-spark-app",
+  "version": "1.0.0",
+  "description": "Solution Tout-en-Un MONA x SPARK - Application principale",
+  "private": true,
+  "workspaces": [
+    "client",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:api\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:api": "cd api && npm run dev",
+    "build": "npm run build:client && npm run build:api",
+    "build:client": "cd client && npm run build",
+    "build:api": "cd api && npm run build",
+    "start": "concurrently \"npm run start:client\" \"npm run start:api\"",
+    "start:client": "cd client && npm run start",
+    "start:api": "cd api && npm run start",
+    "test": "npm run test:client && npm run test:api",
+    "test:client": "cd client && npm run test",
+    "test:api": "cd api && npm run test",
+    "lint": "npm run lint:client && npm run lint:api",
+    "lint:client": "cd client && npm run lint",
+    "lint:api": "cd api && npm run lint",
+    "type-check": "npm run type-check:client && npm run type-check:api",
+    "type-check:client": "cd client && npm run type-check",
+    "type-check:api": "cd api && npm run type-check",
+    "install:all": "npm install && cd client && npm install && cd ../api && npm install",
+    "setup": "npm run install:all && npm run build",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mona-spark/ecosystem.git"
+  },
+  "keywords": [
+    "mona",
+    "spark",
+    "music",
+    "artists",
+    "crm",
+    "content",
+    "streaming",
+    "dashboard"
+  ],
+  "author": "MONA x SPARK Team",
+  "license": "UNLICENSED"
+} 

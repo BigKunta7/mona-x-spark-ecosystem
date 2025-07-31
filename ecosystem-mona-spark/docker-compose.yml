@@ -1,0 +1,202 @@
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecosystem-mona-spark-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mona_spark_db}
+      POSTGRES_USER: ${POSTGRES_USER:-mona_spark_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mona_spark_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./app/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mona_spark_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: ecosystem-mona-spark-redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Backend
+  api:
+    build:
+      context: ./app/api
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${API_PORT:-3001}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-mona_spark_db}
+      POSTGRES_USER: ${POSTGRES_USER:-mona_spark_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mona_spark_password}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+      JWT_SECRET: ${JWT_SECRET:-mona_spark_jwt_secret_key_2024}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-mona_spark_encryption_key_2024}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID:-default_twitch_client_id}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET:-default_twitch_client_secret}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-default_youtube_api_key}
+      TIKTOK_API_KEY: ${TIKTOK_API_KEY:-default_tiktok_api_key}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_USER: ${SMTP_USER:-default_email@gmail.com}
+      SMTP_PASS: ${SMTP_PASS:-default_email_password}
+      SMTP_PORT: ${SMTP_PORT:-587}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Client Next.js
+  client:
+    build:
+      context: ./app/client
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-client
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${CLIENT_PORT:-3000}
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Service Analytics
+  analytics:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-analytics
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${ANALYTICS_PORT:-3002}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-mona_spark_db}
+      POSTGRES_USER: ${POSTGRES_USER:-mona_spark_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mona_spark_password}
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service Media Processor
+  media-processor:
+    build:
+      context: ./services/media-processor
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-media-processor
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${MEDIA_PROCESSOR_PORT:-3003}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+    ports:
+      - "3003:3003"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service Notifications
+  notifications:
+    build:
+      context: ./services/notifications
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-notifications
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${NOTIFICATIONS_PORT:-3004}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_USER: ${SMTP_USER:-default_email@gmail.com}
+      SMTP_PASS: ${SMTP_PASS:-default_email_password}
+      SMTP_PORT: ${SMTP_PORT:-587}
+    ports:
+      - "3004:3004"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Service Streaming Bridge
+  streaming-bridge:
+    build:
+      context: ./services/streaming-bridge
+      dockerfile: Dockerfile
+    container_name: ecosystem-mona-spark-streaming-bridge
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${STREAMING_BRIDGE_PORT:-3005}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mona_spark_redis_password}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID:-default_twitch_client_id}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET:-default_twitch_client_secret}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-default_youtube_api_key}
+      TIKTOK_API_KEY: ${TIKTOK_API_KEY:-default_tiktok_api_key}
+    ports:
+      - "3005:3005"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  redis_data: 

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+echo "🚀 Démarrage Manuel MONA x SPARK"
+echo "================================"
+
+echo ""
+echo "📦 Services Docker :"
+docker-compose ps
+
+echo ""
+echo "🌐 Pour démarrer les applications :"
+echo ""
+echo "Terminal 1 - SPARK Hub :"
+echo "cd spark-hub/frontend && npm run dev"
+echo ""
+echo "Terminal 2 - MONA Engine (Client) :"
+echo "cd mona-engine/frontend && npm run dev"
+echo ""
+echo "Terminal 3 - MONA Dashboard (Équipe) :"
+echo "cd mona-engine/dashboard && npm run dev"
+echo ""
+echo "📊 Services disponibles :"
+echo "   - PostgreSQL: localhost:5432"
+echo "   - Redis: localhost:6379"
+echo ""
+echo "🎯 URLs d'accès :"
+echo "   - SPARK Hub: http://localhost:3003"
+echo "   - MONA Engine (Client): http://localhost:3000"
+echo "   - MONA Dashboard (Équipe): http://localhost:3001"
+echo ""
+echo "✅ Votre écosystème est prêt pour le démarrage manuel !" 
