@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import djConnectionsRouter from './dj-connections';
+import plugAndPlayRouter from './dj-connections';
 import gamificationRouter from '../gamification/badges';
 import geolocationRouter from '../geolocation';
 
 const aiRouter = Router();
 
 // Routes AI principales
-aiRouter.use('/dj-connections', djConnectionsRouter);
+aiRouter.use('/plug-and-play', plugAndPlayRouter);
 aiRouter.use('/gamification', gamificationRouter);
 aiRouter.use('/geolocation', geolocationRouter);
 
@@ -15,7 +15,7 @@ aiRouter.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     services: {
-      dj_connections: 'active',
+      plug_and_play: 'active',
       gamification: 'active',
       geolocation: 'active'
     },
@@ -31,7 +31,7 @@ aiRouter.get('/stats', (req, res) => {
     successful_collaborations: 89,
     compatible_creators_found: 342,
     average_compatibility_score: 0.78,
-    ai_recommendations_accuracy: 0.85,
+    plug_and_play_accuracy: 0.85,
     ecosystem_orchestration_rate: 0.92
   });
 });

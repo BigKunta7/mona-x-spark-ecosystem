@@ -170,8 +170,8 @@ export default function AIDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-white mb-2">AI DJ en cours d'initialisation...</h2>
-          <p className="text-gray-300">Optimisation de l'écosystème créatif</p>
+                               <h2 className="text-2xl font-bold text-white mb-2">Plug and Play en cours d'initialisation...</h2>
+                     <p className="text-gray-300">Connexion de l'écosystème créatif</p>
         </div>
       </div>
     );
@@ -188,8 +188,8 @@ export default function AIDashboard() {
                 <span className="text-2xl">🎧</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold">AI DJ Dashboard</h1>
-                <p className="text-gray-300">Écosystème créatif intelligent</p>
+                <h1 className="text-2xl font-bold">Plug and Play Dashboard</h1>
+                <p className="text-gray-300">Connexions créatives intelligentes</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -211,9 +211,9 @@ export default function AIDashboard() {
           <div className="flex space-x-8">
             {[
               { id: 'overview', label: 'Vue d\'ensemble', icon: '📊' },
-              { id: 'transitions', label: 'Transitions AI', icon: '🔄' },
-              { id: 'mashups', label: 'Mashups Créatifs', icon: '🎵' },
-              { id: 'connections', label: 'Connexions Optimales', icon: '🔗' }
+              { id: 'connections', label: 'Connexions Intelligentes', icon: '🔌' },
+              { id: 'collaborations', label: 'Collaborations', icon: '🤝' },
+              { id: 'ecosystem', label: 'Écosystème', icon: '🌐' }
             ].map((tab) => (
               <button
                 key={tab.id}

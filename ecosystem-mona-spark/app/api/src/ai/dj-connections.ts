@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 
 const djConnectionsRouter = Router();
 
-// Types pour AI DJ - Connexions entre créateurs
+// Types pour Plug and Play - Connexions entre créateurs
 interface Creator {
   id: string;
   name: string;
@@ -53,8 +53,8 @@ interface CollaborationRecommendation {
   success_probability: number;
 }
 
-// Service AI DJ - Connexions Créatives
-class AIDJService {
+// Service Plug and Play - Connexions Créatives
+class PlugAndPlayService {
   // Trouver des créateurs compatibles
   async findCompatibleCreators(creator: Creator): Promise<Creator[]> {
     // Simuler des créateurs compatibles
@@ -376,7 +376,7 @@ class AIDJService {
   }
 }
 
-const aiDJService = new AIDJService();
+const plugAndPlayService = new PlugAndPlayService();
 
 // Routes API
 djConnectionsRouter.get('/compatible-creators/:creatorId', async (req: any, res: Response) => {
@@ -385,7 +385,7 @@ djConnectionsRouter.get('/compatible-creators/:creatorId', async (req: any, res:
     // Simuler un créateur
     const creator: Creator = {
       id: creatorId,
-      name: 'DJ Flow',
+      name: 'Producer Flow',
       genre: 'electronic',
       style: ['techno', 'ambient', 'experimental'],
       skills: ['music', 'production', 'live_performance'],
@@ -399,30 +399,30 @@ djConnectionsRouter.get('/compatible-creators/:creatorId', async (req: any, res:
       frequency: 'daily'
     };
     
-    const compatibleCreators = await aiDJService.findCompatibleCreators(creator);
+    const compatibleCreators = await plugAndPlayService.findCompatibleCreators(creator);
     res.json(compatibleCreators);
   } catch (error: any) {
-    res.status(500).json({ error: 'Erreur AI DJ', details: error.message });
+    res.status(500).json({ error: 'Erreur Plug and Play', details: error.message });
   }
 });
 
 djConnectionsRouter.post('/create-connection', async (req: any, res: Response) => {
   try {
     const { creatorA, creatorB } = req.body;
-    const connection = await aiDJService.createConnection(creatorA, creatorB);
+    const connection = await plugAndPlayService.createConnection(creatorA, creatorB);
     res.json(connection);
   } catch (error: any) {
-    res.status(500).json({ error: 'Erreur AI DJ', details: error.message });
+    res.status(500).json({ error: 'Erreur Plug and Play', details: error.message });
   }
 });
 
 djConnectionsRouter.post('/orchestrate-ecosystem', async (req: any, res: Response) => {
   try {
     const { creators } = req.body;
-    const orchestration = await aiDJService.orchestrateEcosystem(creators);
+    const orchestration = await plugAndPlayService.orchestrateEcosystem(creators);
     res.json(orchestration);
   } catch (error: any) {
-    res.status(500).json({ error: 'Erreur AI DJ', details: error.message });
+    res.status(500).json({ error: 'Erreur Plug and Play', details: error.message });
   }
 });
 
@@ -432,7 +432,7 @@ djConnectionsRouter.get('/recommendations/:creatorId', async (req: any, res: Res
     // Simuler un créateur
     const creator: Creator = {
       id: creatorId,
-      name: 'DJ Flow',
+      name: 'Producer Flow',
       genre: 'electronic',
       style: ['techno', 'ambient', 'experimental'],
       skills: ['music', 'production', 'live_performance'],
@@ -446,10 +446,10 @@ djConnectionsRouter.get('/recommendations/:creatorId', async (req: any, res: Res
       frequency: 'daily'
     };
     
-    const recommendations = await aiDJService.recommendCollaborations(creator);
+    const recommendations = await plugAndPlayService.recommendCollaborations(creator);
     res.json(recommendations);
   } catch (error: any) {
-    res.status(500).json({ error: 'Erreur AI DJ', details: error.message });
+    res.status(500).json({ error: 'Erreur Plug and Play', details: error.message });
   }
 });
 

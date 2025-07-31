@@ -64,15 +64,15 @@ const portalSections = [
     icon: "⚙️",
     features: ["Gestion utilisateurs", "Analytics globales", "Modération"]
   },
-  {
-    title: "AI DJ",
-    subtitle: "Intelligence Artificielle",
-    description: "Interface intelligente pour l'orchestration de l'écosystème créatif avec transitions parfaites, mashups et connexions optimisées.",
-    href: "/ai-dashboard",
-    color: "from-cyan-600 to-blue-600",
-    icon: "🎧",
-    features: ["Transitions AI optimisées", "Mashups créatifs générés", "Connexions intelligentes", "Orchestration écosystème"]
-  },
+            {
+            title: "Plug and Play",
+            subtitle: "Connexions Intelligentes",
+            description: "Service de connexion intelligente entre créateurs avec orchestration automatique de l'écosystème créatif.",
+            href: "/ai-dashboard",
+            color: "from-cyan-600 to-blue-600",
+            icon: "🔌",
+            features: ["Connexions intelligentes", "Orchestration automatique", "Collaborations optimisées", "Écosystème connecté"]
+          },
 ];
 
 // Composant de carte avec animations et interactions
