@@ -9,6 +9,8 @@ const PORT = process.env.PORT || 3001;
 
 import financeRouter from './finance';
 import aiRouter from './ai';
+import gamificationRouter from './gamification';
+import geolocationRouter from './geolocation';
 
 // Middleware
 app.use(helmet());
@@ -18,6 +20,8 @@ app.use(express.json());
 // API Routes
 app.use('/api/finance', financeRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/gamification', gamificationRouter);
+app.use('/api/geolocation', geolocationRouter);
 
 // Rate limiting
 const limiter = rateLimit({
