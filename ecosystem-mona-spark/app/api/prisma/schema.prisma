@@ -1,0 +1,330 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  password_hash     String
+  first_name        String
+  last_name         String
+  user_type         UserType
+  phone             String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  nda_signed        Boolean  @default(false)
+  nda_signed_at     DateTime?
+  consent_marketing Boolean  @default(false)
+  consent_analytics Boolean  @default(false)
+  is_active         Boolean  @default(true)
+
+  // Relations
+  artist            Artists?
+  expert            Experts?
+  sponsor           Sponsors?
+  missions          Missions[] @relation("ExpertMissions")
+  artist_missions   Missions[] @relation("ArtistMissions")
+  communications    Communications[]
+  scoring_events    ScoringEvents[]
+  payments          Payments[]
+  spark_applications SparkApplications[]
+
+  @@map("users")
+}
+
+model Artists {
+  id              String   @id
+  artist_name     String?
+  genre           String?
+  followers_count Int      @default(0)
+  score_mona      Int      @default(0)
+  level           String   @default("prospect")
+  bio             String?
+  social_media    Json?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  user            Users    @relation(fields: [id], references: [id])
+  missions        Missions[]
+  scoring_events  ScoringEvents[]
+  spark_applications SparkApplications[]
+
+  @@map("artists")
+}
+
+model Experts {
+  id                String   @id
+  specialty         String
+  years_experience  Int?
+  hourly_rate       Decimal?
+  availability      Json?
+  rating            Decimal  @default(0)
+  missions_completed Int     @default(0)
+  is_verified       Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  user             Users    @relation(fields: [id], references: [id])
+  missions         Missions[]
+
+  @@map("experts")
+}
+
+model Sponsors {
+  id            String   @id
+  company_name  String?
+  industry      String?
+  budget_range  String?
+  contact_person String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // Relations
+  user          Users    @relation(fields: [id], references: [id])
+  villa_sponsors VillaSponsors[]
+
+  @@map("sponsors")
+}
+
+model Missions {
+  id              String   @id @default(uuid())
+  expert_id       String
+  artist_id       String
+  title           String
+  description     String?
+  budget          Decimal?
+  commission_rate Decimal  @default(25.00)
+  status          MissionStatus @default(PENDING)
+  start_date      DateTime?
+  end_date        DateTime?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  expert          Experts  @relation(fields: [expert_id], references: [id])
+  artist          Artists  @relation(fields: [artist_id], references: [id])
+
+  @@map("missions")
+}
+
+model SparkVillas {
+  id                   String   @id @default(uuid())
+  name                 String
+  location             String?
+  start_date           DateTime?
+  end_date             DateTime?
+  genre                String?
+  max_participants     Int      @default(10)
+  current_participants Int      @default(0)
+  status               VillaStatus @default(PLANNING)
+  budget_total         Decimal?
+  budget_spent         Decimal  @default(0)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  // Relations
+  applications         SparkApplications[]
+  villa_sponsors      VillaSponsors[]
+
+  @@map("spark_villas")
+}
+
+model SparkApplications {
+  id                String   @id @default(uuid())
+  artist_id         String
+  villa_id          String
+  motivation_text   String?
+  portfolio_links   Json?
+  score_application Int?
+  status            ApplicationStatus @default(PENDING)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  artist            Artists    @relation(fields: [artist_id], references: [id])
+  villa             SparkVillas @relation(fields: [villa_id], references: [id])
+
+  @@map("spark_applications")
+}
+
+model VillaSponsors {
+  id              String   @id @default(uuid())
+  villa_id        String
+  sponsor_id      String
+  package_type    PackageType
+  amount          Decimal?
+  status          SponsorStatus @default(PENDING)
+  contract_signed Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  villa           SparkVillas @relation(fields: [villa_id], references: [id])
+  sponsor         Sponsors    @relation(fields: [sponsor_id], references: [id])
+
+  @@map("villa_sponsors")
+}
+
+model AutomationSequences {
+  id                String   @id @default(uuid())
+  name              String
+  type              SequenceType
+  trigger_type      TriggerType
+  trigger_conditions Json?
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  communications    Communications[]
+
+  @@map("automation_sequences")
+}
+
+model Communications {
+  id           String   @id @default(uuid())
+  user_id      String
+  sequence_id  String?
+  type         CommunicationType
+  subject      String?
+  content      String?
+  sent_at      DateTime @default(now())
+  opened       Boolean  @default(false)
+  clicked      Boolean  @default(false)
+  status       CommunicationStatus @default(SENT)
+
+  // Relations
+  user         Users    @relation(fields: [user_id], references: [id])
+  sequence     AutomationSequences? @relation(fields: [sequence_id], references: [id])
+
+  @@map("communications")
+}
+
+model ScoringEvents {
+  id           String   @id @default(uuid())
+  artist_id    String
+  event_type   String
+  points_change Int
+  old_score    Int?
+  new_score    Int?
+  details      Json?
+  created_at   DateTime @default(now())
+
+  // Relations
+  artist       Artists  @relation(fields: [artist_id], references: [id])
+
+  @@map("scoring_events")
+}
+
+model Payments {
+  id                String   @id @default(uuid())
+  user_id           String
+  amount            Decimal
+  currency          String   @default("EUR")
+  payment_type      PaymentType
+  status            PaymentStatus @default(PENDING)
+  stripe_payment_id String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  user              Users    @relation(fields: [user_id], references: [id])
+
+  @@map("payments")
+}
+
+// Enums
+enum UserType {
+  ARTIST
+  EXPERT
+  SPONSOR
+  ADMIN
+}
+
+enum MissionStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum VillaStatus {
+  PLANNING
+  OPEN
+  FULL
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WAITLIST
+}
+
+enum PackageType {
+  PRINCIPAL
+  CATEGORIEL
+  ACTIVATION
+  EVENEMENT
+}
+
+enum SponsorStatus {
+  PENDING
+  CONFIRMED
+  PAID
+  COMPLETED
+}
+
+enum SequenceType {
+  WELCOME
+  NURTURING
+  UPSELL
+  SPARK
+  WINBACK
+}
+
+enum TriggerType {
+  SCORE_CHANGE
+  TIME_BASED
+  ACTION
+}
+
+enum CommunicationType {
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum CommunicationStatus {
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+}
+
+enum PaymentType {
+  SUBSCRIPTION
+  MISSION
+  SPONSOR
+  COMMISSION
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+} 

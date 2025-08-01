@@ -273,4 +273,26 @@ function estimatePotentialROI(score: number): number {
 
 
 export function getRecommendations(score: ArtistScore): string[] {
-//... (le reste du fichier reste inchangé)
+  const recommendations: string[] = [];
+  
+  // Recommandations basées sur le score total
+  if (score.totalScore < 30) {
+    recommendations.push('Développer votre présence en ligne');
+    recommendations.push('Augmenter la fréquence de publication');
+    recommendations.push('Améliorer la qualité du contenu');
+  } else if (score.totalScore < 50) {
+    recommendations.push('Optimiser votre stratégie de contenu');
+    recommendations.push('Développer votre communauté');
+    recommendations.push('Améliorer l\'engagement');
+  } else if (score.totalScore < 70) {
+    recommendations.push('Diversifier vos plateformes');
+    recommendations.push('Collaborer avec d\'autres créateurs');
+    recommendations.push('Monétiser votre audience');
+  } else {
+    recommendations.push('Maintenir votre excellence');
+    recommendations.push('Développer de nouveaux projets');
+    recommendations.push('Mentorer d\'autres créateurs');
+  }
+  
+  return recommendations;
+}

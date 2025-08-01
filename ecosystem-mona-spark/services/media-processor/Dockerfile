@@ -15,11 +15,17 @@ RUN npm config set fetch-retries 5
 # Copier les fichiers de dépendances
 COPY package*.json ./
 
-# Installer les dépendances avec des options de résilience
-RUN npm install --omit=dev --no-audit --no-fund --prefer-offline
+# Installer toutes les dépendances (incluant devDependencies pour la compilation)
+RUN npm install --no-audit --no-fund --prefer-offline
 
 # Copier le code source
 COPY . .
+
+# Compiler le TypeScript
+RUN npm run build
+
+# Supprimer les devDependencies après compilation
+RUN npm prune --omit=dev
 
 # Exposer le port
 EXPOSE 3003
