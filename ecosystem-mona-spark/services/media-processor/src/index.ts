@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -6,12 +6,12 @@ const PORT = process.env.PORT || 3003;
 app.use(express.json());
 
 // Route de santé
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'OK', service: 'media-processor', timestamp: new Date().toISOString() });
 });
 
 // Route racine
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({ 
     message: 'MONA x SPARK Media Processor Service',
     version: '1.0.0',

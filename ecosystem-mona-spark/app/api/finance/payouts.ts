@@ -18,7 +18,7 @@ router.get('/investment/:investmentId', async (req: Request, res: Response) => {
     // 1. Vérifier que l'utilisateur connecté est bien le propriétaire de l'investissement
     // 2. Récupérer tous les enregistrements de la table "payouts" pour cet investmentId
     // 3. Retourner l'historique
-    res.status(501).json({ msg: 'Route de l\'historique des paiements non implémentée.' });
+    return res.status(501).json({ msg: 'Route de l\'historique des paiements non implémentée.' });
 });
 
 /**
@@ -36,8 +36,7 @@ router.post('/trigger', async (req: Request, res: Response) => {
     //       i. Calculer la part de ce montant dû à l'investisseur
     //       ii. [INTÉGRATION PAIEMENT] Envoyer le paiement à l'investisseur
     //       iii. Insérer un enregistrement dans la table "payouts"
-    res.status(501).json({ msg: 'Route de déclenchement des paiements non implémentée.' });
+    return res.status(501).json({ msg: 'Route de déclenchement des paiements non implémentée.' });
 });
-
 
 export default router;

@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
     // 7. Mettre à jour le champ "amount_raised" de la table "offerings"
     // 8. Retourner la confirmation de l'investissement
 
-    res.status(501).json({ msg: 'Route de création d\'investissement non implémentée.' });
+    return res.status(501).json({ msg: 'Route de création d\'investissement non implémentée.' });
 });
 
 /**
@@ -39,7 +39,7 @@ router.get('/me', async (req: Request, res: Response) => {
     // 1. Récupérer tous les investissements où investor_id = ID de l'utilisateur
     // 2. Joindre les détails des offres associées
     // 3. Retourner le portefeuille d'investissements
-    res.status(501).json({ msg: 'Route de portefeuille non implémentée.' });
+    return res.status(501).json({ msg: 'Route de portefeuille non implémentée.' });
 });
 
 export default router;

@@ -284,6 +284,11 @@ export default function AutomationDashboard() {
     ));
   };
 
+  const toggleTemplateActive = (templateId: string) => {
+    // Logique pour activer/désactiver un template
+    console.log('Toggle template:', templateId);
+  };
+
   const performanceData = sequences.map(seq => ({
     name: seq.name,
     open_rate: seq.stats.open_rate * 100,
@@ -400,7 +405,10 @@ export default function AutomationDashboard() {
                       <CardHeader>
                         <div className="flex justify-between items-center">
                           <CardTitle className="text-sm">{template.name}</CardTitle>
-                          <Switch checked={template.active} />
+                          <Switch 
+                            checked={template.active} 
+                            onCheckedChange={() => toggleTemplateActive(template.id)}
+                          />
                         </div>
                       </CardHeader>
                       <CardContent>
