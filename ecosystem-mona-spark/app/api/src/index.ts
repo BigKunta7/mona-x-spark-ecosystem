@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { monaDB, sparkDB, analyticsDB, db } from './database';
+import { monaMarketFitRouter } from './scoring/mona-market-fit';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +23,7 @@ app.use('/api/finance', financeRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/gamification', gamificationRouter);
 app.use('/api/geolocation', geolocationRouter);
+app.use('/api/mona-market-fit', monaMarketFitRouter);
 
 // Rate limiting
 const limiter = rateLimit({
@@ -393,4 +395,5 @@ app.listen(PORT, () => {
   console.log(`🚀 MONA x SPARK API running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`📈 Status: http://localhost:${PORT}/status`);
+  console.log(`📊 Mona Market Fit API: http://localhost:${PORT}/api/mona-market-fit`);
 }); 

@@ -1,0 +1,30 @@
+# Dockerfile simplifié pour MONA x SPARK Cloud
+FROM node:18-alpine
+
+# Installation des dépendances système
+RUN apk add --no-cache \
+    curl \
+    postgresql-client \
+    redis-tools
+
+# Définition du répertoire de travail
+WORKDIR /app
+
+# Copie des fichiers de configuration
+COPY package*.json ./
+COPY turbo.json ./
+
+# Installation des dépendances globales
+RUN npm install -g turbo
+
+# Copie des fichiers source
+COPY . .
+
+# Installation des dépendances pour tous les workspaces
+RUN turbo install
+
+# Exposition du port principal
+EXPOSE 3000
+
+# Commande de démarrage simplifiée
+CMD ["npm", "run", "dev", "--filter=mona-spark-client"] 

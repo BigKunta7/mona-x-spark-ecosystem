@@ -10,8 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Tables principales
 model Users {
-  id                String   @id @default(uuid())
+  id                String   @id @default(cuid())
   email             String   @unique
   password_hash     String
   first_name        String
@@ -27,25 +28,24 @@ model Users {
   is_active         Boolean  @default(true)
 
   // Relations
-  artist            Artists?
-  expert            Experts?
-  sponsor           Sponsors?
-  missions          Missions[] @relation("ExpertMissions")
-  artist_missions   Missions[] @relation("ArtistMissions")
-  communications    Communications[]
-  scoring_events    ScoringEvents[]
-  payments          Payments[]
-  spark_applications SparkApplications[]
+  artist   Artist?
+  expert   Expert?
+  sponsor  Sponsor?
+  interactions Interaction[]
+  opportunities Opportunity[]
+  tasks    Task[]
+  events   Event[]
 
   @@map("users")
 }
 
 model Artists {
-  id              String   @id
+  id              String   @id @default(cuid())
   artist_name     String?
   genre           String?
   followers_count Int      @default(0)
   score_mona      Int      @default(0)
+  market_fit_score Int     @default(0)
   level           String   @default("prospect")
   bio             String?
   social_media    Json?
@@ -53,35 +53,36 @@ model Artists {
   updated_at      DateTime @updatedAt
 
   // Relations
-  user            Users    @relation(fields: [id], references: [id])
-  missions        Missions[]
-  scoring_events  ScoringEvents[]
-  spark_applications SparkApplications[]
+  user           Users           @relation(fields: [id], references: [id])
+  interactions   Interaction[]
+  opportunities  Opportunity[]
+  spark_applications SparkApplication[]
+  villa_participants VillaParticipant[]
 
   @@map("artists")
 }
 
 model Experts {
-  id                String   @id
+  id                String   @id @default(cuid())
   specialty         String
   years_experience  Int?
-  hourly_rate       Decimal?
+  hourly_rate       Decimal? @db.Decimal(10, 2)
   availability      Json?
-  rating            Decimal  @default(0)
+  rating            Decimal? @db.Decimal(3, 2) @default(0)
   missions_completed Int     @default(0)
   is_verified       Boolean  @default(false)
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
   // Relations
-  user             Users    @relation(fields: [id], references: [id])
-  missions         Missions[]
+  user     Users     @relation(fields: [id], references: [id])
+  missions Mission[]
 
   @@map("experts")
 }
 
 model Sponsors {
-  id            String   @id
+  id            String   @id @default(cuid())
   company_name  String?
   industry      String?
   budget_range  String?
@@ -90,157 +91,245 @@ model Sponsors {
   updated_at    DateTime @updatedAt
 
   // Relations
-  user          Users    @relation(fields: [id], references: [id])
-  villa_sponsors VillaSponsors[]
+  user           Users           @relation(fields: [id], references: [id])
+  villa_sponsors VillaSponsor[]
 
   @@map("sponsors")
 }
 
-model Missions {
-  id              String   @id @default(uuid())
-  expert_id       String
-  artist_id       String
-  title           String
-  description     String?
-  budget          Decimal?
-  commission_rate Decimal  @default(25.00)
-  status          MissionStatus @default(PENDING)
-  start_date      DateTime?
-  end_date        DateTime?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+// Tables CRM & Pipeline
+model Interactions {
+  id           String   @id @default(cuid())
+  artist_id    String
+  type         InteractionType
+  description  String
+  outcome      String
+  next_action  String
+  assigned_to  String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   // Relations
-  expert          Experts  @relation(fields: [expert_id], references: [id])
-  artist          Artists  @relation(fields: [artist_id], references: [id])
+  artist Artists @relation(fields: [artist_id], references: [id])
 
-  @@map("missions")
+  @@map("interactions")
 }
 
-model SparkVillas {
-  id                   String   @id @default(uuid())
-  name                 String
-  location             String?
-  start_date           DateTime?
-  end_date             DateTime?
-  genre                String?
-  max_participants     Int      @default(10)
-  current_participants Int      @default(0)
-  status               VillaStatus @default(PLANNING)
-  budget_total         Decimal?
-  budget_spent         Decimal  @default(0)
-  created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
+model Opportunities {
+  id             String   @id @default(cuid())
+  artist_id      String
+  title          String
+  value          Decimal  @db.Decimal(10, 2)
+  probability    Int
+  stage          OpportunityStage
+  expected_close DateTime
+  description    String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   // Relations
-  applications         SparkApplications[]
-  villa_sponsors      VillaSponsors[]
+  artist Artists @relation(fields: [artist_id], references: [id])
+
+  @@map("opportunities")
+}
+
+// Tables SPARK
+model SparkVillas {
+  id                  String   @id @default(cuid())
+  name                String
+  location            String?
+  start_date          DateTime
+  end_date            DateTime
+  genre               String?
+  max_participants    Int      @default(10)
+  current_participants Int     @default(0)
+  status              VillaStatus @default(PLANNING)
+  budget_total        Decimal? @db.Decimal(10, 2)
+  budget_spent        Decimal? @db.Decimal(10, 2) @default(0)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  // Relations
+  applications        SparkApplication[]
+  participants        VillaParticipant[]
+  sponsors           VillaSponsor[]
+  events             Event[]
 
   @@map("spark_villas")
 }
 
-model SparkApplications {
-  id                String   @id @default(uuid())
-  artist_id         String
-  villa_id          String
-  motivation_text   String?
-  portfolio_links   Json?
-  score_application Int?
-  status            ApplicationStatus @default(PENDING)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  // Relations
-  artist            Artists    @relation(fields: [artist_id], references: [id])
-  villa             SparkVillas @relation(fields: [villa_id], references: [id])
-
-  @@map("spark_applications")
-}
-
-model VillaSponsors {
-  id              String   @id @default(uuid())
+model SparkApplication {
+  id              String   @id @default(cuid())
+  artist_id       String
   villa_id        String
-  sponsor_id      String
-  package_type    PackageType
-  amount          Decimal?
-  status          SponsorStatus @default(PENDING)
-  contract_signed Boolean  @default(false)
+  motivation_text  String?
+  status          ApplicationStatus @default(PENDING)
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   // Relations
-  villa           SparkVillas @relation(fields: [villa_id], references: [id])
-  sponsor         Sponsors    @relation(fields: [sponsor_id], references: [id])
+  artist Artists      @relation(fields: [artist_id], references: [id])
+  villa  SparkVillas @relation(fields: [villa_id], references: [id])
+
+  @@map("spark_applications")
+}
+
+model VillaParticipant {
+  id        String   @id @default(cuid())
+  artist_id String
+  villa_id  String
+  role      String?
+  joined_at DateTime @default(now())
+
+  // Relations
+  artist Artists      @relation(fields: [artist_id], references: [id])
+  villa  SparkVillas @relation(fields: [villa_id], references: [id])
+
+  @@unique([artist_id, villa_id])
+  @@map("villa_participants")
+}
+
+model VillaSponsor {
+  id        String   @id @default(cuid())
+  sponsor_id String
+  villa_id  String
+  amount    Decimal? @db.Decimal(10, 2)
+  status    SponsorStatus @default(PENDING)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  sponsor Sponsors    @relation(fields: [sponsor_id], references: [id])
+  villa   SparkVillas @relation(fields: [villa_id], references: [id])
 
   @@map("villa_sponsors")
 }
 
+// Tables Automation & Planning
 model AutomationSequences {
-  id                String   @id @default(uuid())
-  name              String
-  type              SequenceType
-  trigger_type      TriggerType
-  trigger_conditions Json?
-  is_active         Boolean  @default(true)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  // Relations
-  communications    Communications[]
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  triggers    Json
+  actions     Json
+  status      AutomationStatus @default(DRAFT)
+  last_run    DateTime?
+  next_run    DateTime?
+  success_rate Float   @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("automation_sequences")
 }
 
-model Communications {
-  id           String   @id @default(uuid())
-  user_id      String
-  sequence_id  String?
-  type         CommunicationType
-  subject      String?
-  content      String?
-  sent_at      DateTime @default(now())
-  opened       Boolean  @default(false)
-  clicked      Boolean  @default(false)
-  status       CommunicationStatus @default(SENT)
+model Tasks {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  status         TaskStatus @default(TODO)
+  priority       Priority @default(MEDIUM)
+  assignee_id    String?
+  due_date       DateTime?
+  estimated_hours Float?
+  actual_hours   Float?
+  tags           String[]
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   // Relations
-  user         Users    @relation(fields: [user_id], references: [id])
-  sequence     AutomationSequences? @relation(fields: [sequence_id], references: [id])
+  assignee Users? @relation(fields: [assignee_id], references: [id])
+
+  @@map("tasks")
+}
+
+model Events {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  start_date  DateTime
+  end_date    DateTime
+  type        EventType
+  color       String?
+  attendees   String[]
+  location    String?
+  user_id     String?
+  villa_id    String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  user  Users?       @relation(fields: [user_id], references: [id])
+  villa SparkVillas? @relation(fields: [villa_id], references: [id])
+
+  @@map("events")
+}
+
+// Tables Marketplace
+model MarketplaceBlocks {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String
+  features    String[]
+  price       String
+  duration    String
+  experts_count Int
+  success_rate Float
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("marketplace_blocks")
+}
+
+model MarketplaceContacts {
+  id        String   @id @default(cuid())
+  block_id  String
+  name      String
+  email     String
+  phone     String?
+  project   String?
+  budget    String?
+  timeline  String?
+  message   String?
+  status    ContactStatus @default(PENDING)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  block MarketplaceBlocks @relation(fields: [block_id], references: [id])
+
+  @@map("marketplace_contacts")
+}
+
+// Tables Communications
+model Communications {
+  id          String   @id @default(cuid())
+  user_id     String
+  type        CommunicationType
+  subject     String?
+  content     String
+  status      CommunicationStatus @default(PENDING)
+  sent_at     DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  user Users @relation(fields: [user_id], references: [id])
 
   @@map("communications")
 }
 
+// Tables Scoring & Analytics
 model ScoringEvents {
-  id           String   @id @default(uuid())
-  artist_id    String
-  event_type   String
-  points_change Int
-  old_score    Int?
-  new_score    Int?
-  details      Json?
-  created_at   DateTime @default(now())
-
-  // Relations
-  artist       Artists  @relation(fields: [artist_id], references: [id])
+  id          String   @id @default(cuid())
+  artist_id   String
+  event_type  String
+  score_change Int
+  details     Json?
+  created_at  DateTime @default(now())
 
   @@map("scoring_events")
-}
-
-model Payments {
-  id                String   @id @default(uuid())
-  user_id           String
-  amount            Decimal
-  currency          String   @default("EUR")
-  payment_type      PaymentType
-  status            PaymentStatus @default(PENDING)
-  stripe_payment_id String?
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  // Relations
-  user              Users    @relation(fields: [user_id], references: [id])
-
-  @@map("payments")
 }
 
 // Enums
@@ -251,12 +340,19 @@ enum UserType {
   ADMIN
 }
 
-enum MissionStatus {
-  PENDING
-  ACCEPTED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
+enum InteractionType {
+  EMAIL
+  CALL
+  MEETING
+  MESSAGE
+  PROPOSAL
+}
+
+enum OpportunityStage {
+  DISCOVERY
+  PROPOSAL
+  NEGOTIATION
+  CLOSED
 }
 
 enum VillaStatus {
@@ -271,60 +367,60 @@ enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
-  WAITLIST
-}
-
-enum PackageType {
-  PRINCIPAL
-  CATEGORIEL
-  ACTIVATION
-  EVENEMENT
+  WITHDRAWN
 }
 
 enum SponsorStatus {
   PENDING
   CONFIRMED
-  PAID
-  COMPLETED
+  CANCELLED
 }
 
-enum SequenceType {
-  WELCOME
-  NURTURING
-  UPSELL
-  SPARK
-  WINBACK
+enum AutomationStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
 }
 
-enum TriggerType {
-  SCORE_CHANGE
-  TIME_BASED
-  ACTION
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum EventType {
+  MEETING
+  DEADLINE
+  REMINDER
+  STREAM
+  VILLA
+}
+
+enum ContactStatus {
+  PENDING
+  CONTACTED
+  RESPONDED
+  CLOSED
 }
 
 enum CommunicationType {
   EMAIL
   SMS
   PUSH
+  IN_APP
 }
 
 enum CommunicationStatus {
-  SENT
-  DELIVERED
-  FAILED
-  BOUNCED
-}
-
-enum PaymentType {
-  SUBSCRIPTION
-  MISSION
-  SPONSOR
-  COMMISSION
-}
-
-enum PaymentStatus {
   PENDING
-  COMPLETED
+  SENT
   FAILED
-  REFUNDED
+  DELIVERED
 } 

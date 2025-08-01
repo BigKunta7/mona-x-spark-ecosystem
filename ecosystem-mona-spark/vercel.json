@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "name": "mona-spark-ecosystem",
+  "builds": [
+    {
+      "src": "app/client/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "app/api/package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "app/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app/client/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "API_PORT": "3001",
+    "POSTGRES_DB": "mona_spark_db",
+    "POSTGRES_USER": "mona_spark_user",
+    "POSTGRES_PASSWORD": "mona_spark_password_cloud_2024",
+    "JWT_SECRET": "mona_spark_jwt_secret_key_cloud_2024_secure",
+    "ENCRYPTION_KEY": "mona_spark_encryption_key_cloud_2024_secure",
+    "TWITCH_CLIENT_ID": "your_twitch_client_id",
+    "TWITCH_CLIENT_SECRET": "your_twitch_client_secret",
+    "YOUTUBE_API_KEY": "your_youtube_api_key",
+    "TIKTOK_API_KEY": "your_tiktok_api_key",
+    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_USER": "your_email@gmail.com",
+    "SMTP_PASS": "your_email_password",
+    "SMTP_PORT": "587",
+    "NEXT_PUBLIC_API_URL": "https://mona-spark-api.vercel.app",
+    "NEXT_PUBLIC_APP_URL": "https://mona-spark-client.vercel.app",
+    "ENABLE_METRICS": "true",
+    "ENABLE_LOGGING": "true",
+    "LOG_LEVEL": "info"
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  }
+} 

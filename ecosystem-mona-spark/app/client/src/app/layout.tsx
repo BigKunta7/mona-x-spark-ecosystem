@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import Navigation from '@/components/layout/Navigation';
+import { cn } from '@/lib/utils';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
   title: 'MONA x SPARK - Écosystème de Gestion Artistique',
@@ -18,9 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        {children}
+    <html lang="fr" suppressHydrationWarning>
+      <body className={cn(
+        "min-h-screen bg-background font-sans antialiased",
+        inter.variable
+      )}>
+        <Navigation />
+        <main className="relative flex min-h-screen flex-col">
+          {children}
+        </main>
       </body>
     </html>
   );

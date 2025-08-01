@@ -1,0 +1,47 @@
+services:
+  # Service principal - Client Next.js
+  - type: web
+    name: mona-spark-client
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        value: https://mona-spark-api.onrender.com
+
+  # Service API Backend
+  - type: web
+    name: mona-spark-api
+    env: node
+    buildCommand: cd app/api && npm install && npm run build
+    startCommand: cd app/api && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mona-spark-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: mona-spark-redis
+          property: connectionString
+
+  # Base de données PostgreSQL
+  - type: pserv
+    name: mona-spark-db
+    env: postgres
+    plan: free
+
+  # Cache Redis
+  - type: redis
+    name: mona-spark-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru 

@@ -157,13 +157,14 @@ export interface PaymentSchedule {
 // GESTION DES EXPERTS
 // =====================================================
 
-export interface ExpertProfile extends Expert {
+export interface ExpertProfile extends Omit<Expert, 'availability'> {
   contactInfo: {
     email: string;
     phone?: string;
     calendly?: string;
   };
   availability: {
+    status: 'available' | 'busy' | 'unavailable';
     currentLoad: number; // 0-100%
     maxProjects: number;
     nextAvailable: Date;

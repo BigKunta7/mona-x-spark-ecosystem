@@ -1,596 +1,667 @@
-import React from 'react';
+'use client'
+
+import { useState, useEffect } from 'react'
+
+interface AutomationWorkflow {
+  id: string
+  name: string
+  description: string
+  triggers: string[]
+  actions: string[]
+  status: 'active' | 'inactive' | 'draft'
+  lastRun: Date
+  nextRun: Date
+  successRate: number
+}
+
+interface CalendarEvent {
+  id: string
+  title: string
+  description: string
+  start: Date
+  end: Date
+  type: 'meeting' | 'deadline' | 'reminder' | 'stream' | 'villa'
+  color: string
+  attendees: string[]
+  location: string
+}
+
+interface KanbanTask {
+  id: string
+  title: string
+  description: string
+  status: 'todo' | 'in-progress' | 'review' | 'done'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  assignee: string
+  dueDate: Date
+  tags: string[]
+  estimatedHours: number
+  actualHours: number
+}
 
 export default function AutomationPage() {
+  const [activeTab, setActiveTab] = useState('workflows')
+  const [selectedWorkflow, setSelectedWorkflow] = useState<AutomationWorkflow | null>(null)
+  const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day'>('month')
+  const [kanbanView, setKanbanView] = useState<'board' | 'list'>('board')
+
+  const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([
+    {
+      id: '1',
+      name: 'Onboarding Artiste',
+      description: 'Automatisation complète du processus d\'onboarding',
+      triggers: ['Nouvel artiste inscrit', 'Profil complété'],
+      actions: ['Envoi email de bienvenue', 'Création dossier', 'Assignation mentor'],
+      status: 'active',
+      lastRun: new Date('2024-01-20'),
+      nextRun: new Date('2024-01-22'),
+      successRate: 95
+    },
+    {
+      id: '2',
+      name: 'Suivi Villa SPARK',
+      description: 'Automatisation du suivi des villas créatives',
+      triggers: ['Réservation villa', 'Check-in artiste'],
+      actions: ['Envoi kit préparation', 'Création planning', 'Notifications équipe'],
+      status: 'active',
+      lastRun: new Date('2024-01-19'),
+      nextRun: new Date('2024-01-25'),
+      successRate: 88
+    },
+    {
+      id: '3',
+      name: 'Analytics Reporting',
+      description: 'Rapports automatiques de performance',
+      triggers: ['Fin de semaine', 'Fin de mois'],
+      actions: ['Génération rapport', 'Envoi équipe', 'Mise à jour dashboard'],
+      status: 'active',
+      lastRun: new Date('2024-01-21'),
+      nextRun: new Date('2024-01-28'),
+      successRate: 92
+    }
+  ])
+
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([
+    {
+      id: '1',
+      title: 'Réunion Équipe MONA',
+      description: 'Review hebdomadaire des artistes et prospects',
+      start: new Date('2024-01-22T10:00:00'),
+      end: new Date('2024-01-22T11:30:00'),
+      type: 'meeting',
+      color: 'purple',
+      attendees: ['Marie', 'Thomas', 'Sarah'],
+      location: 'Bureau principal'
+    },
+    {
+      id: '2',
+      title: 'Villa SPARK - Session 1',
+      description: 'Première session de la villa créative',
+      start: new Date('2024-01-23T14:00:00'),
+      end: new Date('2024-01-23T18:00:00'),
+      type: 'villa',
+      color: 'green',
+      attendees: ['Alex Rivera', 'Sarah Chen', 'Équipe SPARK'],
+      location: 'Villa créative'
+    },
+    {
+      id: '3',
+      title: 'Deadline - Contrat Alex',
+      description: 'Finalisation du contrat exclusif',
+      start: new Date('2024-01-24T17:00:00'),
+      end: new Date('2024-01-24T17:00:00'),
+      type: 'deadline',
+      color: 'red',
+      attendees: ['Thomas'],
+      location: 'Bureau'
+    }
+  ])
+
+  const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>([
+    {
+      id: '1',
+      title: 'Finaliser brief Alex Rivera',
+      description: 'Préparer le brief complet pour la villa SPARK',
+      status: 'in-progress',
+      priority: 'high',
+      assignee: 'Marie',
+      dueDate: new Date('2024-01-23'),
+      tags: ['brief', 'villa'],
+      estimatedHours: 4,
+      actualHours: 2
+    },
+    {
+      id: '2',
+      title: 'Review contrat Sarah Chen',
+      description: 'Réviser et négocier les termes du contrat',
+      status: 'review',
+      priority: 'urgent',
+      assignee: 'Thomas',
+      dueDate: new Date('2024-01-24'),
+      tags: ['contrat', 'négociation'],
+      estimatedHours: 6,
+      actualHours: 4
+    },
+    {
+      id: '3',
+      title: 'Préparer présentation sponsors',
+      description: 'Créer la présentation pour les nouveaux sponsors',
+      status: 'todo',
+      priority: 'medium',
+      assignee: 'Sarah',
+      dueDate: new Date('2024-01-26'),
+      tags: ['présentation', 'sponsors'],
+      estimatedHours: 3,
+      actualHours: 0
+    }
+  ])
+
+  const createWorkflow = () => {
+    const newWorkflow: AutomationWorkflow = {
+      id: Date.now().toString(),
+      name: 'Nouveau Workflow',
+      description: 'Description du workflow',
+      triggers: [],
+      actions: [],
+      status: 'draft',
+      lastRun: new Date(),
+      nextRun: new Date(),
+      successRate: 0
+    }
+    setWorkflows(prev => [...prev, newWorkflow])
+    setSelectedWorkflow(newWorkflow)
+  }
+
+  const addCalendarEvent = () => {
+    const newEvent: CalendarEvent = {
+      id: Date.now().toString(),
+      title: 'Nouvel événement',
+      description: 'Description de l\'événement',
+      start: new Date(),
+      end: new Date(),
+      type: 'meeting',
+      color: 'blue',
+      attendees: [],
+      location: ''
+    }
+    setCalendarEvents(prev => [...prev, newEvent])
+  }
+
+  const addKanbanTask = () => {
+    const newTask: KanbanTask = {
+      id: Date.now().toString(),
+      title: 'Nouvelle tâche',
+      description: 'Description de la tâche',
+      status: 'todo',
+      priority: 'medium',
+      assignee: '',
+      dueDate: new Date(),
+      tags: [],
+      estimatedHours: 0,
+      actualHours: 0
+    }
+    setKanbanTasks(prev => [...prev, newTask])
+  }
+
+  const moveTask = (taskId: string, newStatus: KanbanTask['status']) => {
+    setKanbanTasks(prev => prev.map(task => 
+      task.id === taskId ? { ...task, status: newStatus } : task
+    ))
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'todo': return 'bg-gray-500'
+      case 'in-progress': return 'bg-blue-500'
+      case 'review': return 'bg-yellow-500'
+      case 'done': return 'bg-green-500'
+      default: return 'bg-gray-500'
+    }
+  }
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'low': return 'text-gray-400'
+      case 'medium': return 'text-blue-400'
+      case 'high': return 'text-orange-400'
+      case 'urgent': return 'text-red-400'
+      default: return 'text-gray-400'
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-      {/* Header */}
-      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <div className="text-2xl font-bold text-white">MONA x SPARK Automation</div>
-              <div className="text-sm text-gray-300">Système d'automation Email/SMS</div>
-            </div>
-            <nav className="flex space-x-8">
-              <button className="px-4 py-2 rounded-lg transition-all text-gray-300 hover:text-white">MONA</button>
-              <button className="px-4 py-2 rounded-lg transition-all text-gray-300 hover:text-white">SPARK</button>
-              <button className="px-4 py-2 rounded-lg transition-all bg-white/20 text-white">Automation</button>
-            </nav>
+    <div className="container mx-auto px-4 py-16">
+      <div className="text-center mb-16">
+        <h1 className="text-6xl font-bold text-white mb-6">
+          Automation V2
+        </h1>
+        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          Automatisez votre carrière artistique avec nos outils intelligents 
+          et nos workflows optimisés pour maximiser votre croissance.
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex space-x-1 bg-white/10 rounded-lg p-1 mb-8">
+        {[
+          { id: 'workflows', label: 'Workflows Zapier/Make', icon: '⚡' },
+          { id: 'calendar', label: 'Calendrier Google-like', icon: '📅' },
+          { id: 'kanban', label: 'Kanban Trello-like', icon: '📋' },
+          { id: 'analytics', label: 'Analytics Automation', icon: '📊' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-3 px-4 rounded-md transition-all ${
+              activeTab === tab.id
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                : 'text-gray-300 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span className="mr-2">{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Workflows Tab */}
+      {activeTab === 'workflows' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">Workflows Automatisés</h2>
+            <button
+              onClick={createWorkflow}
+              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+            >
+              + Nouveau Workflow
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workflows.map(workflow => (
+              <div
+                key={workflow.id}
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 cursor-pointer hover:bg-white/15 transition-all"
+                onClick={() => setSelectedWorkflow(workflow)}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-white">{workflow.name}</h3>
+                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    workflow.status === 'active' ? 'bg-green-500' :
+                    workflow.status === 'inactive' ? 'bg-gray-500' : 'bg-yellow-500'
+                  } text-white`}>
+                    {workflow.status}
+                  </div>
+                </div>
+                
+                <p className="text-gray-300 mb-4 text-sm">{workflow.description}</p>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="text-sm">
+                    <span className="text-purple-400 font-semibold">Triggers:</span>
+                    <div className="text-gray-300 mt-1">
+                      {workflow.triggers.map(trigger => (
+                        <div key={trigger} className="flex items-center">
+                          <span className="text-green-400 mr-2">▶</span>
+                          {trigger}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm">
+                    <span className="text-blue-400 font-semibold">Actions:</span>
+                    <div className="text-gray-300 mt-1">
+                      {workflow.actions.map(action => (
+                        <div key={action} className="flex items-center">
+                          <span className="text-blue-400 mr-2">⚡</span>
+                          {action}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-400">
+                    Succès: {workflow.successRate}%
+                  </span>
+                  <span className="text-gray-400">
+                    Prochaine exécution: {workflow.nextRun.toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </header>
+      )}
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="space-y-12">
+      {/* Calendar Tab */}
+      {activeTab === 'calendar' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">Calendrier Google-like</h2>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCalendarView('month')}
+                className={`px-3 py-1 rounded text-sm ${
+                  calendarView === 'month' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300'
+                }`}
+              >
+                Mois
+              </button>
+              <button
+                onClick={() => setCalendarView('week')}
+                className={`px-3 py-1 rounded text-sm ${
+                  calendarView === 'week' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300'
+                }`}
+              >
+                Semaine
+              </button>
+              <button
+                onClick={() => setCalendarView('day')}
+                className={`px-3 py-1 rounded text-sm ${
+                  calendarView === 'day' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300'
+                }`}
+              >
+                Jour
+              </button>
+              <button
+                onClick={addCalendarEvent}
+                className="px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-sm hover:from-purple-600 hover:to-pink-600 transition-all"
+              >
+                + Événement
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <div className="grid grid-cols-7 gap-1 mb-4">
+              {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
+                <div key={day} className="text-center text-gray-400 font-semibold py-2">
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1">
+              {Array.from({ length: 35 }, (_, i) => (
+                <div key={i} className="h-24 bg-white/5 rounded p-2 relative">
+                  <span className="text-gray-400 text-sm">{i + 1}</span>
+                  {calendarEvents.map(event => (
+                    <div
+                      key={event.id}
+                      className={`absolute top-6 left-1 right-1 p-1 rounded text-xs text-white ${
+                        event.color === 'purple' ? 'bg-purple-500' :
+                        event.color === 'green' ? 'bg-green-500' :
+                        event.color === 'red' ? 'bg-red-500' : 'bg-blue-500'
+                      }`}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Événements à venir</h3>
+            <div className="space-y-3">
+              {calendarEvents
+                .sort((a, b) => a.start.getTime() - b.start.getTime())
+                .slice(0, 5)
+                .map(event => (
+                  <div key={event.id} className="flex items-center space-x-4 p-3 bg-white/5 rounded-lg">
+                    <div className={`w-3 h-3 rounded-full ${
+                      event.color === 'purple' ? 'bg-purple-500' :
+                      event.color === 'green' ? 'bg-green-500' :
+                      event.color === 'red' ? 'bg-red-500' : 'bg-blue-500'
+                    }`}></div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-white">{event.title}</div>
+                      <div className="text-sm text-gray-300">{event.description}</div>
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      {event.start.toLocaleDateString()} {event.start.toLocaleTimeString()}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Kanban Tab */}
+      {activeTab === 'kanban' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">Kanban Trello-like</h2>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setKanbanView('board')}
+                className={`px-3 py-1 rounded text-sm ${
+                  kanbanView === 'board' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300'
+                }`}
+              >
+                Board
+              </button>
+              <button
+                onClick={() => setKanbanView('list')}
+                className={`px-3 py-1 rounded text-sm ${
+                  kanbanView === 'list' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300'
+                }`}
+              >
+                Liste
+              </button>
+              <button
+                onClick={addKanbanTask}
+                className="px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-sm hover:from-purple-600 hover:to-pink-600 transition-all"
+              >
+                + Tâche
+              </button>
+            </div>
+          </div>
+
+          {kanbanView === 'board' ? (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[
+                { status: 'todo', title: 'À faire', color: 'bg-gray-500' },
+                { status: 'in-progress', title: 'En cours', color: 'bg-blue-500' },
+                { status: 'review', title: 'En révision', color: 'bg-yellow-500' },
+                { status: 'done', title: 'Terminé', color: 'bg-green-500' }
+              ].map(column => (
+                <div key={column.status} className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-white">{column.title}</h3>
+                    <div className={`px-2 py-1 rounded-full text-xs font-semibold ${column.color} text-white`}>
+                      {kanbanTasks.filter(task => task.status === column.status).length}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {kanbanTasks
+                      .filter(task => task.status === column.status)
+                      .map(task => (
+                        <div
+                          key={task.id}
+                          className="bg-white/5 rounded-lg p-3 cursor-pointer hover:bg-white/10 transition-all"
+                          draggable
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-white">{task.title}</h4>
+                            <span className={`text-xs font-semibold ${getPriorityColor(task.priority)}`}>
+                              {task.priority.toUpperCase()}
+                            </span>
+                          </div>
+                          
+                          <p className="text-gray-300 text-sm mb-2">{task.description}</p>
+                          
+                          <div className="flex items-center justify-between text-xs text-gray-400">
+                            <span>Assigné à: {task.assignee}</span>
+                            <span>{task.estimatedHours}h</span>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {task.tags.map(tag => (
+                              <span key={tag} className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+              <div className="space-y-3">
+                {kanbanTasks.map(task => (
+                  <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-3 h-3 rounded-full ${getStatusColor(task.status)}`}></div>
+                      <div>
+                        <div className="font-semibold text-white">{task.title}</div>
+                        <div className="text-sm text-gray-300">{task.description}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <span className={`text-sm font-semibold ${getPriorityColor(task.priority)}`}>
+                        {task.priority}
+                      </span>
+                      <span className="text-sm text-gray-400">{task.assignee}</span>
+                      <span className="text-sm text-gray-400">
+                        {task.dueDate.toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Analytics Tab */}
+      {activeTab === 'analytics' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Workflows Actifs</h3>
+            <div className="text-3xl font-bold text-white mb-2">
+              {workflows.filter(w => w.status === 'active').length}
+            </div>
+            <div className="text-sm text-gray-300">Workflows en cours d'exécution</div>
+          </div>
           
-          {/* Hero Section */}
-          <div className="text-center space-y-6">
-            <h1 className="text-5xl font-bold text-white">
-              MONA x SPARK - Automation Email/SMS
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Système d'automation intelligent pour convertir, fidéliser et transformer les artistes
-            </p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Taux de Succès</h3>
+            <div className="text-3xl font-bold text-white mb-2">91%</div>
+            <div className="text-sm text-gray-300">Moyenne des workflows</div>
           </div>
-
-          {/* Stratégie Globale */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border-2 border-white/20">
-            <h2 className="text-3xl font-bold text-white mb-6">Stratégie Globale d'Automation</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              
-              {/* Objectifs Prioritaires */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white">Objectifs Prioritaires</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">1</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Conversion Prospects → Clients</div>
-                      <div className="text-sm text-gray-300">25% taux de conversion cible</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">2</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Rétention & Upsell</div>
-                      <div className="text-sm text-gray-300">LTV moyenne +150%</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">3</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Préparation SPARK-ready</div>
-                      <div className="text-sm text-gray-300">Pipeline qualifié</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">4</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Réactivation Dormants</div>
-                      <div className="text-sm text-gray-300">Win-back 20%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Canaux & Timing */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white">Canaux & Timing</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">📧</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Email</div>
-                      <div className="text-sm text-gray-300">Contenu éducatif, analyses, offres</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">📱</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">SMS</div>
-                      <div className="text-sm text-gray-300">Urgence, rappels, social proof</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm">🔔</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Push notifications</div>
-                      <div className="text-sm text-gray-300">Engagement app, scores, connexions</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-sm">💬</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">WhatsApp</div>
-                      <div className="text-sm text-gray-300">Support VIP, coaching personnel</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Tâches Complétées</h3>
+            <div className="text-3xl font-bold text-white mb-2">
+              {kanbanTasks.filter(t => t.status === 'done').length}
             </div>
+            <div className="text-sm text-gray-300">Cette semaine</div>
           </div>
-
-          {/* Séquences d'Automation */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-white text-center">Séquences d'Automation</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              
-              {/* Séquence 1 : Welcome Prospects */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-green-500/50">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                      <span className="text-xl">1</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Welcome Prospects</h3>
-                      <div className="text-sm text-gray-300">7 jours - Conversion initiale</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0 :</span>
-                      <span className="text-white">Email bienvenue + ressources gratuites</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0+2h :</span>
-                      <span className="text-white">SMS confirmation + social proof</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J3 :</span>
-                      <span className="text-white">Diagnostic + prescription personnalisée</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J5 :</span>
-                      <span className="text-white">Objection handling + urgence</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J6 :</span>
-                      <span className="text-white">SMS urgence finale</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J7 :</span>
-                      <span className="text-white">Dernière chance + alternative</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">Taux de conversion cible :</span>
-                      <span className="text-green-400 font-semibold">25%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Séquence 2 : Nurturing Client MONA 290€ */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-blue-500/50">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-xl">2</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Nurturing MONA 290€</h3>
-                      <div className="text-sm text-gray-300">30 jours - Fidélisation & upsell</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0 :</span>
-                      <span className="text-white">Onboarding + première étape</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J1 :</span>
-                      <span className="text-white">SMS rappel action</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J7 :</span>
-                      <span className="text-white">Premiers résultats + social proof</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J14 :</span>
-                      <span className="text-white">Mi-parcours + upsell soft</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J21 :</span>
-                      <span className="text-white">Préparation fin de parcours</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J28 :</span>
-                      <span className="text-white">Bilan final + upsell stratégique</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">Taux d'upsell cible :</span>
-                      <span className="text-blue-400 font-semibold">40%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Séquence 3 : Conversion Upsell MONA 390€ */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-500/50">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-xl">3</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Upsell MONA 390€</h3>
-                      <div className="text-sm text-gray-300">14 jours - Conversion premium</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0 :</span>
-                      <span className="text-white">Félicitation + invitation exclusive</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J1 :</span>
-                      <span className="text-white">SMS urgence + social proof</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J3 :</span>
-                      <span className="text-white">Objection handling + garantie</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J7 :</span>
-                      <span className="text-white">Dernière chance + rareté</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">Taux de conversion cible :</span>
-                      <span className="text-purple-400 font-semibold">35%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Séquence 4 : Préparation SPARK-ready */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-orange-500/50">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
-                      <span className="text-xl">4</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">SPARK-ready</h3>
-                      <div className="text-sm text-gray-300">21 jours - Préparation villa</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0 :</span>
-                      <span className="text-white">Félicitations + révélation exclusive</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J1 :</span>
-                      <span className="text-white">SMS urgence + social proof</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J5 :</span>
-                      <span className="text-white">Objection handling + témoignages</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">Taux de candidature cible :</span>
-                      <span className="text-orange-400 font-semibold">60%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Séquence 5 : Win-back Dormants */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-red-500/50">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
-                      <span className="text-xl">5</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Win-back Dormants</h3>
-                      <div className="text-sm text-gray-300">10 jours - Réactivation</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J0 :</span>
-                      <span className="text-white">Constat + empathie</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J3 :</span>
-                      <span className="text-white">Success story + espoir</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">J5 :</span>
-                      <span className="text-white">SMS dernière tentative</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">Taux de réactivation cible :</span>
-                      <span className="text-red-400 font-semibold">20%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Événements Planifiés</h3>
+            <div className="text-3xl font-bold text-white mb-2">
+              {calendarEvents.filter(e => e.start > new Date()).length}
             </div>
+            <div className="text-sm text-gray-300">Prochains événements</div>
           </div>
+        </div>
+      )}
 
-          {/* Métriques & KPI */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-white text-center">Métriques & KPI</h2>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border-2 border-white/20">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/20">
-                      <th className="text-left py-3 text-white font-semibold">Séquence</th>
-                      <th className="text-center py-3 text-white font-semibold">Taux d'ouverture</th>
-                      <th className="text-center py-3 text-white font-semibold">Taux de clic</th>
-                      <th className="text-center py-3 text-white font-semibold">Taux de conversion</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-white/10">
-                      <td className="py-3 text-white font-semibold">Welcome Prospects</td>
-                      <td className="py-3 text-center text-green-400">45%</td>
-                      <td className="py-3 text-center text-green-400">12%</td>
-                      <td className="py-3 text-center text-green-400">25% → Clients</td>
-                    </tr>
-                    <tr className="border-b border-white/10">
-                      <td className="py-3 text-white font-semibold">Nurturing 290€</td>
-                      <td className="py-3 text-center text-blue-400">65%</td>
-                      <td className="py-3 text-center text-blue-400">18%</td>
-                      <td className="py-3 text-center text-blue-400">40% → Upsell</td>
-                    </tr>
-                    <tr className="border-b border-white/10">
-                      <td className="py-3 text-white font-semibold">Upsell 390€</td>
-                      <td className="py-3 text-center text-purple-400">55%</td>
-                      <td className="py-3 text-center text-purple-400">15%</td>
-                      <td className="py-3 text-center text-purple-400">35% → Premium</td>
-                    </tr>
-                    <tr className="border-b border-white/10">
-                      <td className="py-3 text-white font-semibold">SPARK-Ready</td>
-                      <td className="py-3 text-center text-orange-400">75%</td>
-                      <td className="py-3 text-center text-orange-400">25%</td>
-                      <td className="py-3 text-center text-orange-400">60% → Candidature</td>
-                    </tr>
-                    <tr>
-                      <td className="py-3 text-white font-semibold">Win-back</td>
-                      <td className="py-3 text-center text-red-400">35%</td>
-                      <td className="py-3 text-center text-red-400">8%</td>
-                      <td className="py-3 text-center text-red-400">20% → Réactivation</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          {/* Système de Scoring Comportemental */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-white text-center">Système de Scoring Comportemental</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              
-              {/* Actions Positives */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-green-500/50">
-                <h3 className="text-xl font-bold text-white mb-4">Actions Positives</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Ouverture email</span>
-                    <span className="text-green-400">+1 pt</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Clic lien</span>
-                    <span className="text-green-400">+3 pts</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Connexion app</span>
-                    <span className="text-green-400">+5 pts</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Réponse message</span>
-                    <span className="text-green-400">+10 pts</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Action recommandée</span>
-                    <span className="text-green-400">+15 pts</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions Négatives */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-red-500/50">
-                <h3 className="text-xl font-bold text-white mb-4">Actions Négatives</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Non engagement 7j</span>
-                    <span className="text-red-400">-5 pts</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Désabonnement</span>
-                    <span className="text-red-400">-20 pts</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Spam signalé</span>
-                    <span className="text-red-400">-50 pts</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Triggers Automatiques */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-white text-center">Triggers Automatiques</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">🎉</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Milestone atteint</h3>
-                </div>
-                <p className="text-sm text-gray-300">Félicitations + next step</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">⚠️</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Stagnation détectée</h3>
-                </div>
-                <p className="text-sm text-gray-300">Motivation + help offer</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">🔥</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Pic d'activité</h3>
-                </div>
-                <p className="text-sm text-gray-300">Encouragement + upsell opportunity</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">😴</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Inactivité prolongée</h3>
-                </div>
-                <p className="text-sm text-gray-300">Win-back sequence</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">🎪</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Éligibilité SPARK</h3>
-                </div>
-                <p className="text-sm text-gray-300">Invitation exclusive immédiate</p>
-              </div>
-            </div>
-          </div>
-
-          {/* A/B Tests */}
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-white text-center">A/B Tests Mensuels</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <h3 className="text-lg font-bold text-white mb-4">Subject lines</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Emoji vs texte</span>
-                    <span className="text-white">+15% ouverture</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Urgence vs bénéfice</span>
-                    <span className="text-white">+8% conversion</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <h3 className="text-lg font-bold text-white mb-4">Timing envoi</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Matin vs soir</span>
-                    <span className="text-white">+12% engagement</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Semaine vs weekend</span>
-                    <span className="text-white">+5% clics</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <h3 className="text-lg font-bold text-white mb-4">Canaux</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Email vs SMS</span>
-                    <span className="text-white">+25% réactivité</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Push notification</span>
-                    <span className="text-white">+18% connexion app</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
-                <h3 className="text-lg font-bold text-white mb-4">CTA</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Couleur</span>
-                    <span className="text-white">+22% clics</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Placement</span>
-                    <span className="text-white">+10% conversion</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA Final */}
-          <div className="text-center space-y-6">
-            <h2 className="text-3xl font-bold text-white">Prêt à automatiser votre conversion ?</h2>
-            <p className="text-xl text-gray-300">
-              Système d'automation intelligent pour maximiser vos résultats
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Activer l'Automation
+      {/* Modal Workflow */}
+      {selectedWorkflow && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-lg p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">{selectedWorkflow.name}</h2>
+              <button
+                onClick={() => setSelectedWorkflow(null)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
               </button>
-              <button className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Voir les Templates
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Analyser les Métriques
-              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
+                <p className="text-gray-300">{selectedWorkflow.description}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Triggers</h3>
+                <div className="space-y-2">
+                  {selectedWorkflow.triggers.map(trigger => (
+                    <div key={trigger} className="flex items-center space-x-2">
+                      <span className="text-green-400">▶</span>
+                      <span className="text-white">{trigger}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Actions</h3>
+                <div className="space-y-2">
+                  {selectedWorkflow.actions.map(action => (
+                    <div key={action} className="flex items-center space-x-2">
+                      <span className="text-blue-400">⚡</span>
+                      <span className="text-white">{action}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Statistiques</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Taux de succès</span>
+                      <span className="text-white">{selectedWorkflow.successRate}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Dernière exécution</span>
+                      <span className="text-white">{selectedWorkflow.lastRun.toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Prochaine exécution</span>
+                      <span className="text-white">{selectedWorkflow.nextRun.toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Actions</h3>
+                  <div className="space-y-2">
+                    <button className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                      Activer/Désactiver
+                    </button>
+                    <button className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
+                      Modifier
+                    </button>
+                    <button className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </main>
+      )}
     </div>
-  );
+  )
 } 

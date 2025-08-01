@@ -114,8 +114,8 @@ export function selectParticipants(
     const scoreDiff = (b.score || 0) - (a.score || 0);
     if (scoreDiff !== 0) return scoreDiff;
     
-    const experienceOrder = { 'expert': 3, 'established': 2, 'emerging': 1 };
-    return experienceOrder[b.experience] - experienceOrder[a.experience];
+    const experienceOrder: Record<string, number> = { 'expert': 3, 'established': 2, 'emerging': 1 };
+    return experienceOrder[b.experience as keyof typeof experienceOrder] - experienceOrder[a.experience as keyof typeof experienceOrder];
   });
 
   // Sélectionner les participants
@@ -123,7 +123,7 @@ export function selectParticipants(
     if (selected.length >= maxParticipants) break;
 
     const primaryRole = candidate.roles[0];
-    if (targetRoles.includes(primaryRole) && roleCounts[primaryRole] < 3) {
+    if (targetRoles.includes(primaryRole) && roleCounts[primaryRole as keyof typeof roleCounts] < 3) {
       selected.push({
         id: `participant-${selected.length + 1}`,
         artistId: candidate.id,
@@ -139,7 +139,7 @@ export function selectParticipants(
         }
       });
 
-      roleCounts[primaryRole]++;
+      roleCounts[primaryRole as keyof typeof roleCounts]++;
     }
   }
 
@@ -239,7 +239,7 @@ function calculateAverageSatisfaction(participants: SparkParticipant[]): number 
 function calculateSocialMediaReach(edition: SparkEdition, platform: string): number {
   // Simulation basée sur les participants et le contenu
   const participantReach = edition.participants.reduce((sum, p) => {
-    const followers = p.socialMedia[platform as keyof typeof p.socialMedia] || 0;
+    const followers = (p.socialMedia[platform as keyof typeof p.socialMedia] as number) || 0;
     return sum + followers;
   }, 0);
 

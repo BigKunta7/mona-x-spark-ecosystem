@@ -473,7 +473,7 @@ export const SPARK_ROLES = {
   soundEngineer: 'Réalisateur sonore',
   producer: 'Producteur exécutif',
   facilitator: 'Créateur de synergies',
-  director: 'Metteur en scène',
+  stageDirector: 'Metteur en scène',
   coach: 'Coach créatif',
   architect: 'Architecte d\'expérience'
 }; 

@@ -66,7 +66,7 @@ router.post('/', fakeAuthMiddleware, async (req: any, res: Response) => {
 
     } catch (err: any) {
         console.error('Erreur lors de la création de l\'investissement:', err);
-        res.status(500).json({ error: 'Erreur serveur', details: err.message });
+        return res.status(500).json({ error: 'Erreur serveur', details: err.message });
     }
 });
 

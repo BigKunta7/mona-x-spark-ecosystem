@@ -452,7 +452,7 @@ class GeolocationService {
           location: nearbyVenues[0],
           start_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
           end_date: new Date(Date.now() + 16 * 24 * 60 * 60 * 1000),
-          status: 'proposed',
+          status: 'proposed' as const,
           success_score: 0.89,
           tags: ['music', 'visual', 'collaboration']
         }

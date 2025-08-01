@@ -1,0 +1,20 @@
+# Dockerfile pour le client Next.js MONA x SPARK
+FROM node:18-alpine
+
+# Définition du répertoire de travail
+WORKDIR /app
+
+# Copie des fichiers de configuration du client
+COPY app/client/package*.json ./
+
+# Installation des dépendances
+RUN npm install
+
+# Copie du code source du client
+COPY app/client/ ./
+
+# Exposition du port
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["npm", "run", "dev"] 

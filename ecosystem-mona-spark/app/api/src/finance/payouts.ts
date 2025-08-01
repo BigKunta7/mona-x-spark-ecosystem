@@ -38,7 +38,7 @@ router.post('/periods', fakeAdminAuthMiddleware, async (req: Request, res: Respo
         res.status(201).json(newPeriod);
     } catch (err: any) {
         console.error('Erreur lors de la création de la période de paiement:', err);
-        res.status(500).json({ error: 'Erreur serveur', details: err.message });
+        return res.status(500).json({ error: 'Erreur serveur', details: err.message });
     }
 });
 
@@ -70,7 +70,7 @@ router.post('/claim', fakeUserAuthMiddleware, async (req: any, res: Response) =>
         res.status(201).json(payout);
     } catch (err: any) {
         console.error('Erreur lors de la réclamation du paiement:', err);
-        res.status(500).json({ error: 'Erreur serveur', details: err.message });
+        return res.status(500).json({ error: 'Erreur serveur', details: err.message });
     }
 });
 
