@@ -6,48 +6,142 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables CSS personnalisées pour MONA x SPARK */
+/* ===========================================
+   DESIGN SYSTEM MONA x SPARK
+   Inspiré par Linear, Notion, Stripe
+   =========================================== */
+
 :root {
-  /* Couleurs principales */
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 15, 23, 42;  /* Slate-900 */
-  --background-end-rgb: 30, 58, 138;   /* Blue-800 */
+  /* ===========================================
+     COULEURS PRINCIPALES
+     =========================================== */
   
-  /* Couleurs MONA (Services) */
-  --mona-primary: 99, 102, 241;       /* Indigo-500 */
-  --mona-secondary: 16, 185, 129;     /* Emerald-500 */
+  /* MONA (Services) - Professionnel, structuré */
+  --mona-primary: 99, 102, 241;        /* Indigo-500 */
+  --mona-secondary: 16, 185, 129;      /* Emerald-500 */
+  --mona-light: 129, 140, 248;         /* Indigo-400 */
+  --mona-dark: 67, 56, 202;            /* Indigo-600 */
   
-  /* Couleurs SPARK (Événements) */
-  --spark-accent: 245, 158, 11;       /* Amber-500 */
-  --spark-glow: 236, 72, 153;         /* Pink-500 */
+  /* SPARK (Événements) - Créatif, énergique */
+  --spark-accent: 245, 158, 11;        /* Amber-500 */
+  --spark-glow: 236, 72, 153;          /* Pink-500 */
+  --spark-light: 251, 191, 36;         /* Amber-400 */
+  --spark-dark: 217, 119, 6;           /* Amber-600 */
+  
+  /* Neutres - Inspiré Linear/Notion */
+  --background: 15, 23, 42;            /* Slate-900 */
+  --surface: 30, 41, 59;               /* Slate-800 */
+  --surface-light: 51, 65, 85;         /* Slate-700 */
+  --surface-lighter: 71, 85, 105;      /* Slate-600 */
+  
+  /* Texte */
+  --text-primary: 255, 255, 255;       /* White */
+  --text-secondary: 148, 163, 184;     /* Slate-400 */
+  --text-tertiary: 100, 116, 139;      /* Slate-500 */
   
   /* États */
-  --success: 34, 197, 94;             /* Green-500 */
-  --warning: 245, 158, 11;            /* Amber-500 */
-  --error: 239, 68, 68;               /* Red-500 */
+  --success: 34, 197, 94;              /* Green-500 */
+  --warning: 245, 158, 11;             /* Amber-500 */
+  --error: 239, 68, 68;                /* Red-500 */
+  --info: 59, 130, 246;                /* Blue-500 */
   
-  /* Transitions */
-  --transition-fast: 150ms ease-in-out;
-  --transition-normal: 300ms ease-in-out;
-  --transition-slow: 500ms ease-in-out;
+  /* Bordures */
+  --border-primary: 51, 65, 85;        /* Slate-700 */
+  --border-secondary: 71, 85, 105;     /* Slate-600 */
+  --border-accent: 99, 102, 241;       /* Indigo-500 */
+  
+  /* Ombres */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Transitions - Inspiré Linear */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Espacement - Système 4px */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
 }
 
-/* Styles de base pour le body */
+/* ===========================================
+   STYLES DE BASE
+   =========================================== */
+
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    135deg,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
-  );
+  background: rgb(var(--background));
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
-/* Animations personnalisées pour MONA x SPARK */
+/* ===========================================
+   ANIMATIONS AVANCÉES - Inspiré Linear
+   =========================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
@@ -70,18 +164,30 @@ body {
   }
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Classes d'animation */
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  background-size: 200px 100%;
 }
 
-/* Classes d'animation utilitaires */
+.animate-fade-in {
+  animation: fade-in 0.4s var(--transition-normal);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s var(--transition-normal);
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s var(--transition-fast);
+}
+
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
@@ -90,28 +196,27 @@ body {
   animation: sparkle 3s ease-in-out infinite;
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
-}
-
-/* Scrollbar personnalisée pour MONA x SPARK */
+/* ===========================================
+   SCROLLBAR PERSONNALISÉE
+   =========================================== */
+   
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(var(--surface), 0.5);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(
     135deg,
-    rgba(var(--mona-primary), 0.8),
-    rgba(var(--spark-accent), 0.8)
+    rgba(var(--mona-primary), 0.6),
+    rgba(var(--mona-secondary), 0.6)
   );
-  border-radius: 4px;
+  border-radius: 3px;
   transition: var(--transition-fast);
 }
 
@@ -119,42 +224,675 @@ body {
   background: linear-gradient(
     135deg,
     rgba(var(--mona-primary), 1),
-    rgba(var(--spark-accent), 1)
+    rgba(var(--mona-secondary), 1)
   );
 }
 
-/* Styles pour Firefox */
+/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--mona-primary), 0.8) rgba(255, 255, 255, 0.1);
+  scrollbar-color: rgba(var(--mona-primary), 0.6) rgba(var(--surface), 0.5);
 }
 
-/* Utilitaires personnalisés pour MONA x SPARK */
+/* ===========================================
+   COMPOSANTS UI - Design System
+   =========================================== */
+   
 @layer components {
+  /* Glass Effect - Inspiré Notion */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal);
+  }
+  
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* Gradients de marque */
   .mona-gradient {
-    background: linear-gradient(135deg, rgb(var(--mona-primary)), rgb(var(--mona-secondary)));
+    background: linear-gradient(
+      135deg, 
+      rgb(var(--mona-primary)), 
+      rgb(var(--mona-secondary))
+    );
   }
   
   .spark-gradient {
-    background: linear-gradient(135deg, rgb(var(--spark-accent)), rgb(var(--spark-glow)));
+    background: linear-gradient(
+      135deg, 
+      rgb(var(--spark-accent)), 
+      rgb(var(--spark-glow))
+    );
   }
   
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Buttons - Inspiré Stripe */
+  .btn-primary {
+    background: linear-gradient(
+      135deg, 
+      rgb(var(--mona-primary)), 
+      rgb(var(--mona-light))
+    );
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-6);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: white;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-6);
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: rgb(var(--text-primary));
+    transition: all var(--transition-fast);
+    cursor: pointer;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+  
+  /* Cards - Inspiré Linear */
+  .card-modern {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--mona-primary), 0.3),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+  
+  .card-modern:hover::before {
+    opacity: 1;
+  }
+  
+  .card-modern:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* KPI Cards - Métriques musicales */
+  .kpi-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--mona-primary)),
+      rgb(var(--spark-accent))
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+  
+  .kpi-card:hover::after {
+    opacity: 1;
+  }
+  
+  /* Forms - Inspiré Notion */
+  .form-input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.875rem;
+    color: rgb(var(--text-primary));
+    transition: all var(--transition-fast);
+    width: 100%;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: rgb(var(--mona-primary));
+    box-shadow: 0 0 0 3px rgba(var(--mona-primary), 0.1);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .form-input::placeholder {
+    color: rgb(var(--text-tertiary));
+  }
+  
+  /* Navigation - Inspiré Linear */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(var(--text-secondary));
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgb(var(--text-primary));
+  }
+  
+  .nav-item.active {
+    background: rgba(var(--mona-primary), 0.1);
+    color: rgb(var(--mona-light));
+    border: 1px solid rgba(var(--mona-primary), 0.2);
+  }
+  
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background: rgb(var(--mona-primary));
+    border-radius: 0 2px 2px 0;
+  }
+  
+  /* Tables - Inspiré Stripe */
+  .table-modern {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  .table-modern th {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgb(var(--text-secondary));
+  }
+  
+  .table-modern td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: var(--space-4);
+    font-size: 0.875rem;
+    color: rgb(var(--text-primary));
+  }
+  
+  .table-modern tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  /* Badges - Statuts */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .badge-success {
+    background: rgba(var(--success), 0.1);
+    color: rgb(var(--success));
+    border: 1px solid rgba(var(--success), 0.2);
+  }
+  
+  .badge-warning {
+    background: rgba(var(--warning), 0.1);
+    color: rgb(var(--warning));
+    border: 1px solid rgba(var(--warning), 0.2);
+  }
+  
+  .badge-error {
+    background: rgba(var(--error), 0.1);
+    color: rgb(var(--error));
+    border: 1px solid rgba(var(--error), 0.2);
+  }
+  
+  .badge-info {
+    background: rgba(var(--info), 0.1);
+    color: rgb(var(--info));
+    border: 1px solid rgba(var(--info), 0.2);
+  }
+  
+  /* Skeleton Loading - Inspiré Linear */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 25%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0.02) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: var(--radius-md);
+  }
+  
+  /* Progress Bars - Métriques */
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--mona-primary)),
+      rgb(var(--mona-light))
+    );
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-normal);
+    position: relative;
+  }
+  
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+  
+  /* Tooltips */
+  .tooltip {
+    position: relative;
+    cursor: help;
+  }
+  
+  .tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+    z-index: 1000;
+  }
+  
+  .tooltip:hover::before {
+    opacity: 1;
+  }
+  
+  /* Focus States - Accessibilité */
+  .focus-ring {
+    transition: box-shadow var(--transition-fast);
+  }
+  
+  .focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--mona-primary), 0.3);
+  }
+  
+  /* Utilitaires de texte */
   }
   
   .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
   
-  .hover-lift {
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      rgb(var(--mona-primary)),
+      rgb(var(--spark-accent))
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Interactions */
+  .interactive {
     transition: var(--transition-normal);
+    cursor: pointer;
   }
   
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  .interactive:hover {
+    transform: translateY(-1px);
+  }
+  
+  .interactive:active {
+    transform: translateY(0);
+  }
+  
+  /* Dividers */
+  .divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    margin: var(--space-6) 0;
+  }
+  
+  /* Status Indicators */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: var(--space-2);
+  }
+  
+  .status-online {
+    background: rgb(var(--success));
+    box-shadow: 0 0 6px rgba(var(--success), 0.4);
+  }
+  
+  .status-offline {
+    background: rgb(var(--text-tertiary));
+  }
+  
+  .status-busy {
+    background: rgb(var(--warning));
+    box-shadow: 0 0 6px rgba(var(--warning), 0.4);
+  }
+}
+
+/* ===========================================
+   MÉTRIQUES MUSICALES SPÉCIALISÉES
+   Inspiré SoundChart, Chartmetric, Giga Star
+   =========================================== */
+   
+@layer components {
+  /* Streaming Metrics Cards */
+  .streaming-card {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--mona-primary), 0.05),
+      rgba(var(--spark-accent), 0.05)
+    );
+    border: 1px solid rgba(var(--mona-primary), 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .streaming-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--mona-primary)),
+      rgb(var(--spark-accent))
+    );
+  }
+  
+  /* Platform Icons */
+  .platform-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .platform-spotify {
+    background: #1DB954;
+  }
+  
+  .platform-apple {
+    background: #FA243C;
+  }
+  
+  .platform-youtube {
+    background: #FF0000;
+  }
+  
+  .platform-soundcloud {
+    background: #FF5500;
+  }
+  
+  /* Chart Containers */
+  .chart-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    position: relative;
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  /* Talent Score Gauge */
+  .talent-gauge {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+  
+  .talent-gauge-bg {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 8;
+    fill: none;
+  }
+  
+  .talent-gauge-fill {
+    stroke: url(#talent-gradient);
+    stroke-width: 8;
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dasharray var(--transition-slow);
+  }
+  
+  /* Trending Indicators */
+  .trending-up {
+    color: rgb(var(--success));
+    font-weight: 600;
+  }
+  
+  .trending-down {
+    color: rgb(var(--error));
+    font-weight: 600;
+  }
+  
+  .trending-neutral {
+    color: rgb(var(--text-secondary));
+    font-weight: 500;
   }
 } 
+
+/* ===========================================
+   RESPONSIVE DESIGN - Mobile First
+   =========================================== */
+   
+/* Mobile (default) */
+.container {
+  width: 100%;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+/* ===========================================
+   DARK MODE OPTIMIZATIONS
+   =========================================== */
+   
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 9, 9, 11;           /* Zinc-900 */
+    --surface: 24, 24, 27;            /* Zinc-800 */
+    --surface-light: 39, 39, 42;      /* Zinc-700 */
+  }
+}
+
+/* ===========================================
+   PRINT STYLES
+   =========================================== */
+   
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .card-modern,
+  .glass-card {
+    border: 1px solid #e5e7eb !important;
+    background: white !important;
+  }
+}
+
+/* ===========================================
+   ACCESSIBILITY IMPROVEMENTS
+   =========================================== */
+   
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border-primary: 255, 255, 255;
+    --border-secondary: 200, 200, 200;
+  }
+  
+  .card-modern,
+  .glass-card {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.focus-visible:focus-visible {
+  outline: 2px solid rgb(var(--mona-primary));
+  outline-offset: 2px;
+}
