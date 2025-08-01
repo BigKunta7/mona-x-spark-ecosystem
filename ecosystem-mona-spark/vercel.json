@@ -43,10 +43,5 @@
     "ENABLE_METRICS": "true",
     "ENABLE_LOGGING": "true",
     "LOG_LEVEL": "info"
-  },
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
-    }
   }
 } 

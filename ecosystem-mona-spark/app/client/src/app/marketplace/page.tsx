@@ -1,3 +1,6 @@
+'use client'
+import { useState } from 'react'
+
 export default function MarketplacePage() {
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
   const [contactForm, setContactForm] = useState({
